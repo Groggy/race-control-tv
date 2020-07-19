@@ -1,6 +1,6 @@
 package fr.groggy.racecontrol.tv.core
 
-import fr.groggy.racecontrol.tv.concurrentMap
+import fr.groggy.racecontrol.tv.utils.coroutines.concurrentMap
 import fr.groggy.racecontrol.tv.f1tv.F1TvClient
 import fr.groggy.racecontrol.tv.f1tv.F1TvEventId
 import java.time.Clock

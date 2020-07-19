@@ -1,6 +1,6 @@
 package fr.groggy.racecontrol.tv.core
 
-import fr.groggy.racecontrol.tv.concurrentMap
+import fr.groggy.racecontrol.tv.utils.coroutines.concurrentMap
 import fr.groggy.racecontrol.tv.f1tv.*
 import javax.inject.Inject
 import javax.inject.Singleton

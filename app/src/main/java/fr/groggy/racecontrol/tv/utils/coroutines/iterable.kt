@@ -1,4 +1,4 @@
-package fr.groggy.racecontrol.tv
+package fr.groggy.racecontrol.tv.utils.coroutines
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

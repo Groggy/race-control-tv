@@ -8,9 +8,9 @@ import com.squareup.moshi.Moshi
 import fr.groggy.racecontrol.tv.core.InstantPeriod
 import fr.groggy.racecontrol.tv.core.LocalDatePeriod
 import fr.groggy.racecontrol.tv.f1.F1Token
-import fr.groggy.racecontrol.tv.http.execute
-import fr.groggy.racecontrol.tv.http.parseJsonBody
-import fr.groggy.racecontrol.tv.http.toJsonRequestBody
+import fr.groggy.racecontrol.tv.utils.http.execute
+import fr.groggy.racecontrol.tv.utils.http.parseJsonBody
+import fr.groggy.racecontrol.tv.utils.http.toJsonRequestBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.time.LocalDate
