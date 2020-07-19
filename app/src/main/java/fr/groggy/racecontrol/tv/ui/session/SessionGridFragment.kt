@@ -9,11 +9,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import fr.groggy.racecontrol.tv.core.Channel
 import fr.groggy.racecontrol.tv.core.Session
 import fr.groggy.racecontrol.tv.core.SessionService
+import fr.groggy.racecontrol.tv.f1tv.F1TvSessionId
 import fr.groggy.racecontrol.tv.ui.UiObservableStore
 import fr.groggy.racecontrol.tv.ui.channel.ChannelCardPresenter
 import fr.groggy.racecontrol.tv.ui.channel.ChannelDiffCallback
 import fr.groggy.racecontrol.tv.ui.channel.ChannelPlaybackActivity
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -31,16 +31,16 @@ class SessionGridFragment : VerticalGridSupportFragment(), OnItemViewClickedList
     @Inject lateinit var channelsCardPresenter: ChannelCardPresenter
     @Inject lateinit var channelDiffCallback: ChannelDiffCallback
 
+    private val sessionId: F1TvSessionId by lazy { SessionBrowseActivity.getSessionId(requireActivity()) }
+
     private lateinit var channelsAdapter: ArrayObjectAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        val sessionId = SessionBrowseActivity.getSessionId(requireActivity())
-        lifecycleScope.launch { sessionService.loadSessionWithImagesAndChannels(sessionId) }
         setupUIElements()
         setupEventListeners()
-        store.observe { it.session(sessionId) }.subscribe { updateSession(it) }
+        store.observe { it.session(sessionId) }.subscribe { onUpdatedSession(it) }
     }
 
     private fun setupUIElements() {
@@ -54,9 +54,15 @@ class SessionGridFragment : VerticalGridSupportFragment(), OnItemViewClickedList
         onItemViewClickedListener = this
     }
 
-    private fun updateSession(session: Session) {
+    private fun onUpdatedSession(session: Session) {
         title = session.name
         channelsAdapter.setItems(session.channels, channelDiffCallback)
+    }
+
+    override fun onStart() {
+        Log.d(TAG, "onStart")
+        super.onStart()
+        lifecycleScope.launchWhenStarted { sessionService.loadSessionWithImagesAndChannels(sessionId) }
     }
 
     override fun onDestroy() {

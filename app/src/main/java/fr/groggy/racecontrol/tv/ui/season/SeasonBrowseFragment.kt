@@ -16,7 +16,6 @@ import fr.groggy.racecontrol.tv.ui.event.EventListRowDiffCallback
 import fr.groggy.racecontrol.tv.ui.session.SessionBrowseActivity
 import fr.groggy.racecontrol.tv.ui.session.SessionCardPresenter
 import fr.groggy.racecontrol.tv.ui.session.SessionDiffCallback
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,10 +36,9 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        lifecycleScope.launch { seasonService.loadCurrentSeason() }
         setupUIElements()
         setupEventListeners()
-        store.observe { it.currentSeason }.subscribe { updateSeason(it) }
+        store.observe { it.currentSeason }.subscribe { onUpdatedSeason(it) }
     }
 
     private fun setupUIElements() {
@@ -55,13 +53,19 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
         onItemViewClickedListener = this
     }
 
-    private fun updateSeason(season: Season) {
+    private fun onUpdatedSeason(season: Season) {
         title = season.name
         val existingListRows = eventsAdapter.unmodifiableList<ListRow>()
         val events = season.events
             .filter { it.sessions.isNotEmpty() }
             .map { toListRow(it, existingListRows) }
         eventsAdapter.setItems(events, eventListRowDiffCallback)
+    }
+
+    override fun onStart() {
+        Log.d(TAG, "onStart")
+        super.onStart()
+        lifecycleScope.launchWhenStarted { seasonService.loadCurrentSeason() }
     }
 
     private fun toListRow(event: Event, existingListRows: List<ListRow>): ListRow {
