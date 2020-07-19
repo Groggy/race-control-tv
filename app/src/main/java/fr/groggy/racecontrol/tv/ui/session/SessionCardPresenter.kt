@@ -1,0 +1,58 @@
+package fr.groggy.racecontrol.tv.ui.session
+
+import android.util.Log
+import android.view.ViewGroup
+import androidx.leanback.widget.ImageCardView
+import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_CONTENT
+import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_TITLE
+import androidx.leanback.widget.Presenter
+import com.bumptech.glide.Glide
+import fr.groggy.racecontrol.tv.core.Session
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class SessionCardPresenter @Inject constructor() : Presenter() {
+
+    companion object {
+        private val TAG = SessionCardPresenter::class.simpleName
+
+        private const val WIDTH = 313
+        private const val HEIGHT = 176
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
+        Log.d(TAG, "onCreateViewHolder")
+        val view = ImageCardView(parent.context)
+        view.setMainImageDimensions(
+            WIDTH,
+            HEIGHT
+        )
+        view.cardType = CARD_TYPE_FLAG_TITLE or CARD_TYPE_FLAG_CONTENT
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
+        Log.d(TAG, "onBindViewHolder")
+        val view = viewHolder.view as ImageCardView
+        val session = item as Session
+
+        view.titleText = session.name
+        view.contentText = if (session.live) "Live" else "Replay"
+
+        session.thumbnail?.let {
+            Glide.with(viewHolder.view.context)
+                .load(it.url)
+                .centerCrop()
+                .into(view.mainImageView)
+        }
+    }
+
+    override fun onUnbindViewHolder(viewHolder: ViewHolder) {
+        Log.d(TAG, "onUnbindViewHolder")
+        val view = viewHolder.view as ImageCardView
+        view.badgeImage = null
+        view.mainImage = null
+    }
+
+}
