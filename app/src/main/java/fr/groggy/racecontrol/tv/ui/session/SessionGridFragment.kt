@@ -6,9 +6,9 @@ import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.widget.*
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import fr.groggy.racecontrol.tv.core.Channel
-import fr.groggy.racecontrol.tv.core.Session
-import fr.groggy.racecontrol.tv.core.SessionService
+import fr.groggy.racecontrol.tv.core.channel.Channel
+import fr.groggy.racecontrol.tv.core.session.Session
+import fr.groggy.racecontrol.tv.core.session.SessionService
 import fr.groggy.racecontrol.tv.f1tv.F1TvSessionId
 import fr.groggy.racecontrol.tv.ui.UiObservableStore
 import fr.groggy.racecontrol.tv.ui.channel.ChannelCardPresenter

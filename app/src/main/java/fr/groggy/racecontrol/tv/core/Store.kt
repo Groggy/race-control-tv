@@ -31,8 +31,12 @@ class Store @Inject constructor() {
         val initialState = State()
         val updatesSubject = PublishSubject.create<Update>().toSerialized()
         val stateSubject = BehaviorSubject.createDefault(initialState)
-        updatesSubject.scan(initialState) { state, update -> update(state) }
-            .doOnNext { Log.d(TAG, "Updated state : $it") }
+        updatesSubject
+            .scan(initialState) { state, update ->
+                val updatedState = update(state)
+                if (updatedState != state) Log.d(TAG, "Updated state : $updatedState")
+                updatedState
+            }
             .subscribeOn(Schedulers.newThread())
             .subscribe(stateSubject)
         updates = updatesSubject
@@ -52,6 +56,7 @@ class Store @Inject constructor() {
 
     fun <T> observeNullable(selector: (State) -> T?): Observable<Option<T>> =
         state
+            .filter { it.hydrated }
             .map { selector(it).toOption() }
             .distinctUntilChanged()
 
@@ -76,5 +81,11 @@ class UpdatableStore<T>(
 
     suspend fun get(): T? =
         store.observeNullable { lens.getOption(it).orNull() }.firstOrError().await().orNull()
+
+    fun observe(): Observable<T> =
+        store.observe { lens.getOption(it).orNull() }
+
+    fun observeNullable(): Observable<Option<T>> =
+        store.observeNullable { lens.getOption(it).orNull() }
 
 }

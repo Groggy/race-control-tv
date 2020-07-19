@@ -1,5 +1,7 @@
-package fr.groggy.racecontrol.tv.core
+package fr.groggy.racecontrol.tv.core.event
 
+import fr.groggy.racecontrol.tv.core.*
+import fr.groggy.racecontrol.tv.core.session.SessionService
 import fr.groggy.racecontrol.tv.utils.coroutines.concurrentMap
 import fr.groggy.racecontrol.tv.f1tv.F1TvClient
 import fr.groggy.racecontrol.tv.f1tv.F1TvEventId
@@ -10,12 +12,22 @@ import javax.inject.Singleton
 @Singleton
 class EventService @Inject constructor(
     store: UpdatableStore<State>,
+    private val repository: EventRepository,
     private val f1TvClient: F1TvClient,
     private val sessionService: SessionService,
     private val clock: Clock
-) {
+) : Hydratable {
+
+    companion object {
+        private val TAG = EventService::class.simpleName
+    }
 
     private val eventsStore = store.lens(State.events)
+
+    override suspend fun hydrate() {
+        eventsStore.hydrate(repository, TAG) { it.id }
+        eventsStore.persistChanges(repository, TAG)
+    }
 
     suspend fun loadEventsWithAvailableSessions(ids: List<F1TvEventId>) {
         val events = ids

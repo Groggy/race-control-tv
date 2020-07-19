@@ -7,10 +7,10 @@ import androidx.leanback.widget.*
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import fr.groggy.racecontrol.tv.R
-import fr.groggy.racecontrol.tv.core.Event
-import fr.groggy.racecontrol.tv.core.Season
-import fr.groggy.racecontrol.tv.core.SeasonService
-import fr.groggy.racecontrol.tv.core.Session
+import fr.groggy.racecontrol.tv.core.event.Event
+import fr.groggy.racecontrol.tv.core.season.Season
+import fr.groggy.racecontrol.tv.core.season.SeasonService
+import fr.groggy.racecontrol.tv.core.session.Session
 import fr.groggy.racecontrol.tv.ui.*
 import fr.groggy.racecontrol.tv.ui.event.EventListRowDiffCallback
 import fr.groggy.racecontrol.tv.ui.session.SessionBrowseActivity

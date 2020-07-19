@@ -1,6 +1,6 @@
 package fr.groggy.racecontrol.tv
 
-import android.content.res.Resources
+import android.content.Context
 import arrow.optics.Optional
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory
 import com.google.android.exoplayer2.upstream.HttpDataSource
@@ -9,6 +9,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.groggy.racecontrol.tv.core.State
 import fr.groggy.racecontrol.tv.core.Store
 import fr.groggy.racecontrol.tv.core.UpdatableStore
@@ -38,11 +39,6 @@ class RaceControlTvModule {
 
     @Provides
     @Singleton
-    fun resources(): Resources =
-        RaceControlTvApplication.resources
-
-    @Provides
-    @Singleton
     fun okHttpClient(cookieManager: CookieManager): OkHttpClient =
         OkHttpClient.Builder()
             .cookieJar(JavaNetCookieJar(cookieManager))
@@ -55,8 +51,8 @@ class RaceControlTvModule {
 
     @Provides
     @Singleton
-    fun httpDataSourceFactory(okHttpClient: OkHttpClient, resources: Resources): HttpDataSource.Factory =
-        OkHttpDataSourceFactory(okHttpClient, resources.getString(R.string.app_name))
+    fun httpDataSourceFactory(okHttpClient: OkHttpClient, @ApplicationContext context: Context): HttpDataSource.Factory =
+        OkHttpDataSourceFactory(okHttpClient, context.resources.getString(R.string.app_name))
 
     @Provides
     @Singleton

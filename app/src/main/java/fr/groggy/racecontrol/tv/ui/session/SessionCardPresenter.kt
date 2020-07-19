@@ -7,7 +7,7 @@ import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_CONTENT
 import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_TITLE
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
-import fr.groggy.racecontrol.tv.core.Session
+import fr.groggy.racecontrol.tv.core.session.Session
 import javax.inject.Inject
 import javax.inject.Singleton
 

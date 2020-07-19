@@ -7,9 +7,9 @@ import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_CONTENT
 import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_TITLE
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
-import fr.groggy.racecontrol.tv.core.BasicChannel
-import fr.groggy.racecontrol.tv.core.Channel
-import fr.groggy.racecontrol.tv.core.OnboardChannel
+import fr.groggy.racecontrol.tv.core.channel.BasicChannel
+import fr.groggy.racecontrol.tv.core.channel.Channel
+import fr.groggy.racecontrol.tv.core.channel.OnboardChannel
 import fr.groggy.racecontrol.tv.f1tv.F1TvBasicChannelType.Companion.Data
 import fr.groggy.racecontrol.tv.f1tv.F1TvBasicChannelType.Companion.PitLane
 import fr.groggy.racecontrol.tv.f1tv.F1TvBasicChannelType.Companion.Tracker

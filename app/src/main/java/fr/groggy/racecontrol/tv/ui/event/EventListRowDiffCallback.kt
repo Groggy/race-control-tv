@@ -3,7 +3,7 @@ package fr.groggy.racecontrol.tv.ui.event
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.DiffCallback
 import androidx.leanback.widget.ListRow
-import fr.groggy.racecontrol.tv.core.Session
+import fr.groggy.racecontrol.tv.core.session.Session
 import javax.inject.Inject
 import javax.inject.Singleton
 
