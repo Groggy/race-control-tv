@@ -1,7 +1,6 @@
 package fr.groggy.racecontrol.tv
 
 import android.content.Context
-import arrow.optics.Optional
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory
 import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.squareup.moshi.Moshi
@@ -10,9 +9,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import fr.groggy.racecontrol.tv.core.State
-import fr.groggy.racecontrol.tv.core.Store
-import fr.groggy.racecontrol.tv.core.UpdatableStore
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import java.net.CookieManager
@@ -53,10 +49,5 @@ class RaceControlTvModule {
     @Singleton
     fun httpDataSourceFactory(okHttpClient: OkHttpClient, @ApplicationContext context: Context): HttpDataSource.Factory =
         OkHttpDataSourceFactory(okHttpClient, context.resources.getString(R.string.app_name))
-
-    @Provides
-    @Singleton
-    fun updatableStore(store: Store): UpdatableStore<State> =
-        UpdatableStore(store, Optional.id())
 
 }

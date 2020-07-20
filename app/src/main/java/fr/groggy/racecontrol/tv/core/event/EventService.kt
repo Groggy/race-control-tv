@@ -1,6 +1,6 @@
 package fr.groggy.racecontrol.tv.core.event
 
-import fr.groggy.racecontrol.tv.core.*
+import android.util.Log
 import fr.groggy.racecontrol.tv.core.session.SessionService
 import fr.groggy.racecontrol.tv.utils.coroutines.concurrentMap
 import fr.groggy.racecontrol.tv.f1tv.F1TvClient
@@ -11,31 +11,23 @@ import javax.inject.Singleton
 
 @Singleton
 class EventService @Inject constructor(
-    store: UpdatableStore<State>,
     private val repository: EventRepository,
-    private val f1TvClient: F1TvClient,
+    private val f1Tv: F1TvClient,
     private val sessionService: SessionService,
     private val clock: Clock
-) : Hydratable {
+) {
 
     companion object {
         private val TAG = EventService::class.simpleName
     }
 
-    private val eventsStore = store.lens(State.events)
-
-    override suspend fun hydrate() {
-        eventsStore.hydrate(repository, TAG) { it.id }
-        eventsStore.persistChanges(repository, TAG)
-    }
-
-    suspend fun loadEventsWithAvailableSessions(ids: List<F1TvEventId>) {
-        val events = ids
-            .concurrentMap { f1TvClient.getEvent(it) }
-            .filterNot { it.isFutureEvent(clock) }
-            .sortedByDescending { it.period.start }
-        eventsStore.modify { it + events.associateBy { event -> event.id } }
-        events.forEach { sessionService.loadAvailableSessionsWithImages(it.sessions) }
+    suspend fun loadEvents(ids: List<F1TvEventId>) {
+        Log.d(TAG, "loadEvents")
+        val events = ids.concurrentMap { f1Tv.getEvent(it) }
+        repository.save(events)
+        val (future, pastAndCurrent) = events.partition { it.isFutureEvent(clock) }
+        (pastAndCurrent.sortedByDescending { it.period.start } + future)
+            .forEach { sessionService.loadSessionsWithImages(it.sessions) }
     }
 
 }

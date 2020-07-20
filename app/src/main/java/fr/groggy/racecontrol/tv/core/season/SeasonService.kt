@@ -1,40 +1,38 @@
 package fr.groggy.racecontrol.tv.core.season
 
-import fr.groggy.racecontrol.tv.core.*
+import android.util.Log
 import fr.groggy.racecontrol.tv.core.event.EventService
 import fr.groggy.racecontrol.tv.f1tv.F1TvClient
+import fr.groggy.racecontrol.tv.f1tv.F1TvSeasonId
 import fr.groggy.racecontrol.tv.f1tv.F1TvSeasonId.Companion.CURRENT
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SeasonService @Inject constructor(
-    store: UpdatableStore<State>,
     private val currentSeasonIdRepository: CurrentSeasonIdRepository,
     private val seasonRepository: SeasonRepository,
-    private val f1TvClient: F1TvClient,
+    private val f1Tv: F1TvClient,
     private val eventService: EventService
-) : Hydratable {
+) {
 
     companion object {
         private val TAG = SeasonService::class.simpleName
     }
 
-    private val currentSeasonIdStore = store.lens(State.currentSeasonId)
-    private val seasonsStore = store.lens(State.seasons)
-
-    override suspend fun hydrate() {
-        currentSeasonIdStore.hydrate(currentSeasonIdRepository, TAG)
-        seasonsStore.hydrate(seasonRepository, TAG) { it.id }
-        currentSeasonIdStore.persistChanges(currentSeasonIdRepository, TAG)
-        seasonsStore.persistChanges(seasonRepository, TAG)
+    suspend fun loadCurrentSeason() {
+        Log.d(TAG, "loadCurrentSeason")
+        val season = f1Tv.getSeason(CURRENT)
+        seasonRepository.save(season)
+        currentSeasonIdRepository.save(season.id)
+        eventService.loadEvents(season.events)
     }
 
-    suspend fun loadCurrentSeason() {
-        val season = f1TvClient.getSeason(CURRENT)
-        seasonsStore.modify { it + (season.id to season) }
-        currentSeasonIdStore.set(season.id)
-        eventService.loadEventsWithAvailableSessions(season.events)
+    suspend fun loadSeason(id: F1TvSeasonId) {
+        Log.d(TAG, "loadSeason")
+        val season = f1Tv.getSeason(id)
+        seasonRepository.save(season)
+        eventService.loadEvents(season.events)
     }
 
 }

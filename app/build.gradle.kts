@@ -44,7 +44,6 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-rx3:$kotlinCoroutinesVersion")
 
     implementation("androidx.core:core-ktx:1.3.0")
     implementation("androidx.fragment:fragment-ktx:1.2.5")
@@ -58,10 +57,6 @@ dependencies {
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:$androidxHiltVersion")
     kapt("androidx.hilt:hilt-compiler:$androidxHiltVersion")
 
-    implementation("io.reactivex.rxjava3:rxandroid:3.0.0")
-    implementation("io.reactivex.rxjava3:rxjava:3.0.2")
-    implementation("io.reactivex.rxjava3:rxkotlin:3.0.0")
-
     val okHttpVersion = "4.8.0"
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
     implementation("com.squareup.okhttp3:okhttp-urlconnection:$okHttpVersion")
@@ -71,11 +66,6 @@ dependencies {
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
     implementation("com.auth0.android:jwtdecode:2.0.0")
-
-    val arrowVersion = "0.10.5"
-    implementation("io.arrow-kt:arrow-optics:$arrowVersion")
-    implementation("io.arrow-kt:arrow-syntax:$arrowVersion")
-    kapt("io.arrow-kt:arrow-meta:$arrowVersion")
 
     val glideVersion = "4.11.0"
     implementation("com.github.bumptech.glide:glide:$glideVersion")

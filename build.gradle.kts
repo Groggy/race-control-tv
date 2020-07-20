@@ -2,7 +2,6 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven(url = "https://dl.bintray.com/arrow-kt/arrow-kt/")
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.0.1")

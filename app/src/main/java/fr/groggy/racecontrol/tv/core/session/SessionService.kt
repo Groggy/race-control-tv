@@ -1,6 +1,6 @@
 package fr.groggy.racecontrol.tv.core.session
 
-import fr.groggy.racecontrol.tv.core.*
+import android.util.Log
 import fr.groggy.racecontrol.tv.core.channel.ChannelService
 import fr.groggy.racecontrol.tv.core.image.ImageService
 import fr.groggy.racecontrol.tv.f1tv.F1TvClient
@@ -11,36 +11,29 @@ import javax.inject.Singleton
 
 @Singleton
 class SessionService @Inject constructor(
-    store: UpdatableStore<State>,
     private val repository: SessionRepository,
-    private val f1TvClient: F1TvClient,
+    private val f1Tv: F1TvClient,
     private val channelService: ChannelService,
     private val imageService: ImageService
-) : Hydratable {
+) {
 
     companion object {
         private val TAG = SessionService::class.simpleName
     }
 
-    private val sessionsStore = store.lens(State.sessions)
-
-    override suspend fun hydrate() {
-        sessionsStore.hydrate(repository, TAG) { it.id }
-        sessionsStore.persistChanges(repository, TAG)
-    }
-
-    suspend fun loadAvailableSessionsWithImages(ids: List<F1TvSessionId>) {
-        val sessions = ids
-            .concurrentMap { f1TvClient.getSession(it) }
-            .filter { it.available }
-            .sortedByDescending { it.period.start }
-        sessionsStore.modify { it + sessions.associateBy { session -> session.id } }
-        sessions.forEach { imageService.loadImages(it.images) }
+    suspend fun loadSessionsWithImages(ids: List<F1TvSessionId>) {
+        Log.d(TAG, "loadSessionsWithImages")
+        val sessions = ids.concurrentMap { f1Tv.getSession(it) }
+        repository.save(sessions)
+        val (available, unavailable) = sessions.partition { it.available }
+        (available.sortedByDescending { it.period.start } + unavailable)
+            .forEach { imageService.loadImages(it.images) }
     }
 
     suspend fun loadSessionWithImagesAndChannels(id: F1TvSessionId) {
-        val session = f1TvClient.getSession(id)
-        sessionsStore.modify { it + (session.id to session) }
+        Log.d(TAG, "loadSessionWithImagesAndChannels")
+        val session = f1Tv.getSession(id)
+        repository.save(session)
         imageService.loadImages(session.images)
         channelService.loadChannelsWithDrivers(session.channels)
     }

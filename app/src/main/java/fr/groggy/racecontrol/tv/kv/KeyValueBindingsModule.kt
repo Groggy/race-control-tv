@@ -11,7 +11,6 @@ import fr.groggy.racecontrol.tv.kv.season.SharedPreferencesCurrentSeasonIdReposi
 import fr.groggy.racecontrol.tv.kv.token.SharedPreferencesF1TokenRepository
 import fr.groggy.racecontrol.tv.kv.token.SharedPreferencesF1TvTokenRepository
 
-
 @Module
 @InstallIn(ApplicationComponent::class)
 abstract class KeyValueBindingsModule {

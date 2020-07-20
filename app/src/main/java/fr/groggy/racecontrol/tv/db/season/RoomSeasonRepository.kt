@@ -6,6 +6,9 @@ import fr.groggy.racecontrol.tv.db.RaceControlTvDatabase
 import fr.groggy.racecontrol.tv.f1tv.F1TvEventId
 import fr.groggy.racecontrol.tv.f1tv.F1TvSeason
 import fr.groggy.racecontrol.tv.f1tv.F1TvSeasonId
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import java.time.Year
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,24 +21,30 @@ class RoomSeasonRepository @Inject constructor(
 
     private val dao = database.seasonDao()
 
-    override suspend fun findAll(): Set<F1TvSeason> =
-        dao.findAll()
-            .map { F1TvSeason(
-                id = F1TvSeasonId(it.id),
-                name = it.name,
-                year = Year.of(it.year),
-                events = eventIdListMapper.fromDto(it.events)
-            ) }
-            .toSet()
+    override fun observe(id: F1TvSeasonId): Flow<F1TvSeason?> =
+        dao.observeById(id.value)
+            .map { season -> season?.let { toSeason(it) } }
+            .distinctUntilChanged()
 
-    override suspend fun save(set: Set<F1TvSeason>) {
-        val entities = set.map { SeasonEntity(
-            id = it.id.value,
-            name = it.name,
-            year = it.year.value,
-            events = eventIdListMapper.toDto(it.events)
-        ) }
-        dao.upsertAll(entities)
+    private fun toSeason(season: SeasonEntity): F1TvSeason =
+        F1TvSeason(
+            id = F1TvSeasonId(season.id),
+            name = season.name,
+            year = Year.of(season.year),
+            events = eventIdListMapper.fromDto(season.events)
+        )
+
+    override suspend fun save(season: F1TvSeason) {
+        val entity = toEntity(season)
+        dao.upsert(entity)
     }
+
+    private fun toEntity(season: F1TvSeason): SeasonEntity =
+        SeasonEntity(
+            id = season.id.value,
+            name = season.name,
+            year = season.year.value,
+            events = eventIdListMapper.toDto(season.events)
+        )
 
 }

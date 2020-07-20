@@ -1,21 +1,23 @@
-package fr.groggy.racecontrol.tv.ui.season
+package fr.groggy.racecontrol.tv.ui.season.browse
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.viewModels
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
+import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import fr.groggy.racecontrol.tv.R
-import fr.groggy.racecontrol.tv.core.event.Event
-import fr.groggy.racecontrol.tv.core.season.Season
 import fr.groggy.racecontrol.tv.core.season.SeasonService
-import fr.groggy.racecontrol.tv.core.session.Session
-import fr.groggy.racecontrol.tv.ui.*
+import fr.groggy.racecontrol.tv.f1tv.F1TvSeasonId
+import fr.groggy.racecontrol.tv.ui.channel.playback.ChannelPlaybackActivity
 import fr.groggy.racecontrol.tv.ui.event.EventListRowDiffCallback
-import fr.groggy.racecontrol.tv.ui.session.SessionBrowseActivity
+import fr.groggy.racecontrol.tv.ui.session.browse.SessionBrowseActivity
 import fr.groggy.racecontrol.tv.ui.session.SessionCardPresenter
-import fr.groggy.racecontrol.tv.ui.session.SessionDiffCallback
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -23,12 +25,19 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
 
     companion object {
         private val TAG = SeasonBrowseFragment::class.simpleName
+
+        private val SEASON_ID = "${SeasonBrowseFragment::class}.SEASON_ID"
+
+        fun putSeasonId(intent: Intent, seasonId: F1TvSeasonId) {
+            intent.putExtra(SEASON_ID, seasonId.value)
+        }
+
+        fun findSeasonId(activity: Activity): F1TvSeasonId? =
+            activity.intent.getStringExtra(SEASON_ID)?.let { F1TvSeasonId(it) }
     }
 
-    @Inject lateinit var store: UiObservableStore
     @Inject lateinit var seasonService: SeasonService
     @Inject lateinit var eventListRowDiffCallback: EventListRowDiffCallback
-    @Inject lateinit var sessionDiffCallback: SessionDiffCallback
     @Inject lateinit var sessionCardPresenter: SessionCardPresenter
 
     private lateinit var eventsAdapter: ArrayObjectAdapter
@@ -38,7 +47,12 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
         super.onCreate(savedInstanceState)
         setupUIElements()
         setupEventListeners()
-        store.observe { it.currentSeason }.subscribe { onUpdatedSeason(it) }
+
+        val viewModel: SeasonBrowseViewModel by viewModels()
+        val season = findSeasonId(requireActivity())
+            ?.let { viewModel.season(it) }
+            ?: viewModel.currentSeason
+        season.asLiveData().observe(this, Observer { onUpdatedSeason(it) })
     }
 
     private fun setupUIElements() {
@@ -65,7 +79,11 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
     override fun onStart() {
         Log.d(TAG, "onStart")
         super.onStart()
-        lifecycleScope.launchWhenStarted { seasonService.loadCurrentSeason() }
+        lifecycleScope.launchWhenStarted {
+            findSeasonId(requireActivity())
+                ?.let { seasonService.loadSeason(it) }
+                ?: seasonService.loadCurrentSeason()
+        }
     }
 
     private fun toListRow(event: Event, existingListRows: List<ListRow>): ListRow {
@@ -78,23 +96,15 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
             val sessionsAdapter = existingListRow.adapter as ArrayObjectAdapter
             existingListRow to sessionsAdapter
         }
-        sessionsAdapter.setItems(event.sessions, sessionDiffCallback)
+        sessionsAdapter.setItems(event.sessions, Session.diffCallback)
         return listRow
-    }
-
-    override fun onDestroy() {
-        Log.d(TAG, "onDestroy")
-        super.onDestroy()
-        store.dispose()
     }
 
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder, item: Any, rowViewHolder: RowPresenter.ViewHolder, row: Row) {
         val session = item as Session
-        val intent =
-            SessionBrowseActivity.intent(
-                requireActivity(),
-                session.id
-            )
+        val intent = session.channels.singleOrNull()
+            ?.let { ChannelPlaybackActivity.intent(requireActivity(), it) }
+            ?: SessionBrowseActivity.intent(requireActivity(), session.id)
         startActivity(intent)
     }
 

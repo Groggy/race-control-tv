@@ -1,4 +1,4 @@
-package fr.groggy.racecontrol.tv.ui.channel
+package fr.groggy.racecontrol.tv.ui.channel.playback
 
 import android.app.Activity
 import android.content.Intent
@@ -15,16 +15,14 @@ class ChannelPlaybackActivity : FragmentActivity() {
     companion object {
         private val TAG = ChannelPlaybackActivity::class.simpleName
 
-        private const val CHANNEL_ID = "channelId"
-
         fun intent(activity: Activity, channelId: F1TvChannelId): Intent {
             val intent = Intent(activity.baseContext, ChannelPlaybackActivity::class.java)
-            intent.putExtra(CHANNEL_ID, channelId.value)
+            ChannelPlaybackFragment.putChannelId(
+                intent,
+                channelId
+            )
             return intent
         }
-
-        fun getChannelId(activity: Activity): F1TvChannelId =
-            F1TvChannelId(activity.intent.getStringExtra(CHANNEL_ID)!!)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

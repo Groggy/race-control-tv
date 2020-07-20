@@ -4,14 +4,15 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ImageDao {
 
     @Insert(onConflict = REPLACE)
-    suspend fun upsertAll(images: List<ImageEntity>)
+    suspend fun upsert(images: List<ImageEntity>)
 
-    @Query("SELECT * FROM images")
-    suspend fun findAll(): List<ImageEntity>
+    @Query("SELECT * FROM images WHERE id IN (:ids)")
+    fun observeById(ids: List<String>): Flow<List<ImageEntity>>
 
 }

@@ -12,6 +12,9 @@ import fr.groggy.racecontrol.tv.f1tv.F1TvSessionStatus.Companion.Live
 import fr.groggy.racecontrol.tv.f1tv.F1TvSessionStatus.Companion.Replay
 import fr.groggy.racecontrol.tv.f1tv.F1TvSessionStatus.Companion.Unknown
 import fr.groggy.racecontrol.tv.f1tv.F1TvSessionStatus.Companion.Upcoming
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,44 +34,60 @@ class RoomSessionRepository @Inject constructor(
 
     private val dao = database.sessionDao()
 
-    override suspend fun findAll(): Set<F1TvSession> =
-        dao.findAll()
-            .map { F1TvSession(
-                id = F1TvSessionId(it.id),
-                name = it.name,
-                status = when(it.status) {
-                    REPLAY -> Replay
-                    LIVE -> Live
-                    UPCOMING -> Upcoming
-                    else -> Unknown(it.status)
-                },
-                period = InstantPeriod(
-                    start = Instant.ofEpochMilli(it.startTime),
-                    end = Instant.ofEpochMilli(it.endTime)
-                ),
-                available = it.available,
-                images = imageIdListMapper.fromDto(it.images),
-                channels = channelIdListMapper.fromDto(it.channels)
-            ) }
-            .toSet()
+    override fun observe(id: F1TvSessionId): Flow<F1TvSession> =
+        dao.observeById(id.value)
+            .map { toSession(it) }
+            .distinctUntilChanged()
 
-    override suspend fun save(set: Set<F1TvSession>) {
-        val entities = set.map { SessionEntity(
-            id = it.id.value,
-            name = it.name,
-            status = when(it.status) {
+    override fun observe(ids: List<F1TvSessionId>): Flow<List<F1TvSession>> =
+        dao.observeById(ids.map { it.value })
+            .map { sessions -> sessions.map { toSession(it) } }
+            .distinctUntilChanged()
+
+    private fun toSession(session: SessionEntity): F1TvSession =
+        F1TvSession(
+            id = F1TvSessionId(session.id),
+            name = session.name,
+            status = when (session.status) {
+                REPLAY -> Replay
+                LIVE -> Live
+                UPCOMING -> Upcoming
+                else -> Unknown(session.status)
+            },
+            period = InstantPeriod(
+                start = Instant.ofEpochMilli(session.startTime),
+                end = Instant.ofEpochMilli(session.endTime)
+            ),
+            available = session.available,
+            images = imageIdListMapper.fromDto(session.images),
+            channels = channelIdListMapper.fromDto(session.channels)
+        )
+
+    override suspend fun save(session: F1TvSession) {
+        val entity = toEntity(session)
+        dao.upsert(entity)
+    }
+
+    override suspend fun save(sessions: List<F1TvSession>) {
+        val entities = sessions.map { toEntity(it) }
+        dao.upsert(entities)
+    }
+
+    private fun toEntity(session: F1TvSession): SessionEntity =
+        SessionEntity(
+            id = session.id.value,
+            name = session.name,
+            status = when (session.status) {
                 Replay -> REPLAY
                 Live -> LIVE
                 Upcoming -> UPCOMING
-                is Unknown -> it.status.value
+                is Unknown -> session.status.value
             },
-            startTime = it.period.start.toEpochMilli(),
-            endTime = it.period.end.toEpochMilli(),
-            available = it.available,
-            images = imageIdListMapper.toDto(it.images),
-            channels = channelIdListMapper.toDto(it.channels)
-        ) }
-        dao.upsertAll(entities)
-    }
+            startTime = session.period.start.toEpochMilli(),
+            endTime = session.period.end.toEpochMilli(),
+            available = session.available,
+            images = imageIdListMapper.toDto(session.images),
+            channels = channelIdListMapper.toDto(session.channels)
+        )
 
 }

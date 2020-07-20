@@ -1,5 +1,6 @@
 package fr.groggy.racecontrol.tv.ui.channel
 
+import android.net.Uri
 import android.util.Log
 import android.view.ViewGroup
 import androidx.leanback.widget.ImageCardView
@@ -7,9 +8,7 @@ import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_CONTENT
 import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_TITLE
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
-import fr.groggy.racecontrol.tv.core.channel.BasicChannel
-import fr.groggy.racecontrol.tv.core.channel.Channel
-import fr.groggy.racecontrol.tv.core.channel.OnboardChannel
+import fr.groggy.racecontrol.tv.f1tv.F1TvBasicChannelType
 import fr.groggy.racecontrol.tv.f1tv.F1TvBasicChannelType.Companion.Data
 import fr.groggy.racecontrol.tv.f1tv.F1TvBasicChannelType.Companion.PitLane
 import fr.groggy.racecontrol.tv.f1tv.F1TvBasicChannelType.Companion.Tracker
@@ -42,21 +41,21 @@ class ChannelCardPresenter @Inject constructor() : Presenter() {
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
         Log.d(TAG, "onBindViewHolder")
         val view = viewHolder.view as ImageCardView
-        val channel = item as Channel
-        when(channel) {
-            is BasicChannel -> {
-                view.titleText = when(channel.type) {
+        when(item) {
+            is BasicChannelCard -> {
+                val type = item.type
+                view.titleText = when(type) {
                     Wif -> "Main broadcast"
                     PitLane -> "Pit lane"
                     Tracker -> "Tracker"
                     Data -> "Data"
-                    is Unknown -> channel.type.name
+                    is Unknown -> type.name
                 }
             }
-            is OnboardChannel -> {
-                view.titleText = channel.name
-                view.contentText = channel.driver.racingNumber.toString()
-                channel.driver.headshot?.let {
+            is OnboardChannelCard -> {
+                view.titleText = item.name
+                view.contentText = item.driver?.racingNumber?.toString()
+                item.driver?.headshot?.let {
                     Glide.with(viewHolder.view.context)
                         .load(it.url)
                         .centerCrop()
@@ -75,4 +74,23 @@ class ChannelCardPresenter @Inject constructor() : Presenter() {
         view.mainImage = null
     }
 
+}
+
+interface BasicChannelCard {
+    val type: F1TvBasicChannelType
+}
+
+interface OnboardChannelCard {
+
+    interface Driver {
+        val racingNumber: Int
+        val headshot: Image?
+    }
+
+    interface Image {
+        val url: Uri
+    }
+
+    val name: String
+    val driver: Driver?
 }

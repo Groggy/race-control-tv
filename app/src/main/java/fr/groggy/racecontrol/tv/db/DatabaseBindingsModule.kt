@@ -19,7 +19,7 @@ import fr.groggy.racecontrol.tv.db.session.RoomSessionRepository
 
 @Module
 @InstallIn(ApplicationComponent::class)
-abstract class DbBIndingsModule {
+abstract class DatabaseBindingsModule {
 
     @Binds
     abstract fun channelRepository(repository: RoomChannelRepository): ChannelRepository

@@ -7,6 +7,9 @@ import fr.groggy.racecontrol.tv.db.RaceControlTvDatabase
 import fr.groggy.racecontrol.tv.f1tv.F1TvEvent
 import fr.groggy.racecontrol.tv.f1tv.F1TvEventId
 import fr.groggy.racecontrol.tv.f1tv.F1TvSessionId
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,28 +22,34 @@ class RoomEventRepository @Inject constructor(
 
     private val dao = database.eventDao()
 
-    override suspend fun findAll(): Set<F1TvEvent> =
-        dao.findAll()
-            .map { F1TvEvent(
-                id = F1TvEventId(it.id),
-                name = it.name,
-                period = LocalDatePeriod(
-                    start = LocalDate.ofEpochDay(it.startDate),
-                    end = LocalDate.ofEpochDay(it.endDate)
-                ),
-                sessions = sessionIdListMapper.fromDto(it.sessions)
-            ) }
-            .toSet()
+    override fun observe(ids: List<F1TvEventId>): Flow<List<F1TvEvent>> =
+        dao.observeById(ids.map { it.value })
+            .map { events -> events.map { toEvent(it) } }
+            .distinctUntilChanged()
 
-    override suspend fun save(set: Set<F1TvEvent>) {
-        val entities = set.map { EventEntity(
-            id = it.id.value,
-            name = it.name,
-            startDate = it.period.start.toEpochDay(),
-            endDate = it.period.end.toEpochDay(),
-            sessions = sessionIdListMapper.toDto(it.sessions)
-        ) }
-        dao.upsertAll(entities)
+    private fun toEvent(event: EventEntity): F1TvEvent =
+        F1TvEvent(
+            id = F1TvEventId(event.id),
+            name = event.name,
+            period = LocalDatePeriod(
+                start = LocalDate.ofEpochDay(event.startDate),
+                end = LocalDate.ofEpochDay(event.endDate)
+            ),
+            sessions = sessionIdListMapper.fromDto(event.sessions)
+        )
+
+    override suspend fun save(events: List<F1TvEvent>) {
+        val entities = events.map { toEntity(it) }
+        dao.upsert(entities)
     }
+
+    private fun toEntity(event: F1TvEvent): EventEntity =
+        EventEntity(
+            id = event.id.value,
+            name = event.name,
+            startDate = event.period.start.toEpochDay(),
+            endDate = event.period.end.toEpochDay(),
+            sessions = sessionIdListMapper.toDto(event.sessions)
+        )
 
 }

@@ -1,5 +1,6 @@
 package fr.groggy.racecontrol.tv.ui.session
 
+import android.net.Uri
 import android.util.Log
 import android.view.ViewGroup
 import androidx.leanback.widget.ImageCardView
@@ -7,7 +8,6 @@ import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_CONTENT
 import androidx.leanback.widget.ImageCardView.CARD_TYPE_FLAG_TITLE
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
-import fr.groggy.racecontrol.tv.core.session.Session
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,7 +35,7 @@ class SessionCardPresenter @Inject constructor() : Presenter() {
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
         Log.d(TAG, "onBindViewHolder")
         val view = viewHolder.view as ImageCardView
-        val session = item as Session
+        val session = item as SessionCard
 
         view.titleText = session.name
         view.contentText = if (session.live) "Live" else "Replay"
@@ -53,6 +53,18 @@ class SessionCardPresenter @Inject constructor() : Presenter() {
         val view = viewHolder.view as ImageCardView
         view.badgeImage = null
         view.mainImage = null
+    }
+
+}
+
+interface SessionCard {
+
+    val name: String
+    val live: Boolean
+    val thumbnail: Image?
+
+    interface Image {
+        val url: Uri
     }
 
 }
