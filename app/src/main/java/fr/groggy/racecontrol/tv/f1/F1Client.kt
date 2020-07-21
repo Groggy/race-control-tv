@@ -24,9 +24,11 @@ class F1Client @Inject constructor(
     private val authenticateRequestJsonAdapter = moshi.adapter(F1AuthenticateRequest::class.java)
     private val authenticateResponseJsonAdapter = moshi.adapter(F1AuthenticateResponse::class.java)
 
-    suspend fun authenticate(login: String, password: String): F1Token {
-        val body = F1AuthenticateRequest(login = login, password = password)
-            .toJsonRequestBody(authenticateRequestJsonAdapter)
+    suspend fun authenticate(credentials: F1Credentials): F1Token {
+        val body = F1AuthenticateRequest(
+            login = credentials.login,
+            password = credentials.password
+        ).toJsonRequestBody(authenticateRequestJsonAdapter)
         val request = Request.Builder()
             .url("${ROOT_URL}/v2/account/subscriber/authenticate/by-password")
             .post(body)

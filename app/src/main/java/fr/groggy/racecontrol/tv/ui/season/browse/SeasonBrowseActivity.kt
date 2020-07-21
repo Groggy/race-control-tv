@@ -16,8 +16,11 @@ class SeasonBrowseActivity : FragmentActivity() {
     companion object {
         private val TAG = SeasonBrowseActivity::class.simpleName
 
+        fun intent(activity: Activity): Intent =
+            Intent(activity.baseContext, SeasonBrowseActivity::class.java)
+
         fun intent(activity: Activity, seasonId: F1TvSeasonId): Intent {
-            val intent = Intent(activity.baseContext, SeasonBrowseActivity::class.java)
+            val intent = intent(activity)
             SeasonBrowseFragment.putSeasonId(
                 intent,
                 seasonId

@@ -20,6 +20,8 @@ class SharedPreferencesF1TokenRepository @Inject constructor(
         store.findString(KEY)?.let { F1Token(JWT(it)) }
 
     override fun save(token: F1Token) =
-        store.putString(KEY, token.value.toString())
+        store.update {
+            putString(KEY, token.value.toString())
+        }
 
 }

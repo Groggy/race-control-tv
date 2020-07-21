@@ -26,6 +26,3 @@ build/
 .navigation
 captures/
 output.json
-
-# Sensitive data
-app/src/main/res/values/credentials.xml

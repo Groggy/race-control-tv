@@ -22,6 +22,8 @@ class SharedPreferencesCurrentSeasonIdRepository @Inject constructor(
             .map { if (it != null) F1TvSeasonId(it) else null } // id?.let { F1TvSeasonId(it) } cause a ClassCastException
 
     override fun save(id: F1TvSeasonId) =
-        store.putString(KEY, id.value)
+        store.update {
+            putString(KEY, id.value)
+        }
 
 }

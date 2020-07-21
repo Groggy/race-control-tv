@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Race Control TV</string>
 
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="signin">Sign in</string>
+    <string name="invalid_credentials">Credentials invalid</string>
+    <string name="rejected_credentials">Credentials rejected by F1.com</string>
+
     <string name="data_key_value_store">fr.groggy.racecontrol.tv.DATA_KEY_VALUE_STORE</string>
 </resources>

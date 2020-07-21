@@ -48,11 +48,10 @@ class SharedPreferencesStore @Inject constructor(
     fun findString(key: String): String? =
         sharedPreferences.getString(key, null)
 
-    fun putString(key: String, value: String) {
+    fun update(f: SharedPreferences.Editor.() -> Unit): Unit =
         with(sharedPreferences.edit()) {
-            putString(key, value)
-            commit()
+            f()
+            apply()
         }
-    }
 
 }

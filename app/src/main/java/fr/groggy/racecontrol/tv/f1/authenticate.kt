@@ -17,4 +17,9 @@ data class F1AuthenticateResponse(val data: Data) {
     }
 }
 
+data class F1Credentials(
+    val login: String,
+    val password: String
+)
+
 inline class F1Token(val value: JWT)
