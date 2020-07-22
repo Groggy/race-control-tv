@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.widget.*
@@ -18,6 +19,7 @@ import fr.groggy.racecontrol.tv.ui.channel.playback.ChannelPlaybackActivity
 import javax.inject.Inject
 
 
+@Keep
 @AndroidEntryPoint
 class SessionGridFragment : VerticalGridSupportFragment(), OnItemViewClickedListener {
 

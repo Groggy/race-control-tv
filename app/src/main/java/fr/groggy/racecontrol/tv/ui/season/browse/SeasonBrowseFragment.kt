@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
@@ -20,6 +21,7 @@ import fr.groggy.racecontrol.tv.ui.session.browse.SessionBrowseActivity
 import fr.groggy.racecontrol.tv.ui.session.SessionCardPresenter
 import javax.inject.Inject
 
+@Keep
 @AndroidEntryPoint
 class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 

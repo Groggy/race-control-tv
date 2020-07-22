@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.exoplayer2.ExoPlayer
@@ -21,6 +22,7 @@ import fr.groggy.racecontrol.tv.f1tv.F1TvChannelId
 import fr.groggy.racecontrol.tv.f1tv.F1TvViewing
 import javax.inject.Inject
 
+@Keep
 @AndroidEntryPoint
 class ChannelPlaybackFragment : Fragment() {
 

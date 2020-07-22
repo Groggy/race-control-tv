@@ -19,10 +19,22 @@ android {
 
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = project.properties["signing.key.store.path"]?.let { file(it) }
+            storePassword = project.properties["signing.key.password"] as String?
+            keyAlias = project.properties["signing.key.alias"] as String?
+            keyPassword = project.properties["signing.key.password"] as String?
+            isV1SigningEnabled = true
+            isV2SigningEnabled = true
+        }
+    }
+
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
