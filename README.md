@@ -10,6 +10,10 @@ so everything is in english.
 
 Application is not translated and only available in english.
 
+## Install
+
+Latest APK can be downloaded [here](https://github.com/Groggy/race-control-tv/releases/latest).
+
 ## Disclaimer
 
 I have created this app because the official [F1 TV app](https://play.google.com/store/apps/details?id=com.formulaone.production)
