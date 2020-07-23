@@ -63,7 +63,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.2.0")
 
     val hiltVersion = rootProject.extra["hiltVersion"]
-    val androidxHiltVersion = "1.0.0-alpha01"
+    val androidxHiltVersion = "1.0.0-alpha02"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:$androidxHiltVersion")
