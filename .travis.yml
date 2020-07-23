@@ -2,11 +2,6 @@ language: java
 dist: bionic
 jdk: openjdk8
 
-before_cache:
-  # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
 cache:
   directories:
     # Android SDK
@@ -38,14 +33,19 @@ env:
 script:
   - ./gradlew --no-daemon clean assembleDebug
 
+before_cache:
+  # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
 before_deploy:
   - openssl aes-256-cbc -K $encrypted_d7c41a9780bb_key -iv $encrypted_d7c41a9780bb_iv -in release-key.p12.enc -out release-key.p12 -d
-  - ./gradlew clean assembleRelease
+  - ./gradlew --no-daemon assembleRelease -Psigning.key.store.path=../release-key.p12 -Psigning.key.alias=release -Psigning.key.password="$SIGNING_KEY_PASSWORD"
 
 deploy:
   provider: releases
   api_key:
-    secure: tHCzcn8xk+dm9eHLVhqJlPL94A6YcCjrpQITuYNU+VpZztPea3uvBzOt+mcZv2wGaGRB6AOg/bAO+zBkTXtqLVW0XcNcKaYBgSiA9X+OYcAf2r38pB6WmhZK3h5jFfP58dSYnVzpnGXiW/2bGrSF+3TFhoGyQz4q6ruEyYl7AyUU5RvEo09iZdWhJ3L7tm4DMIK2J1eDCpwBKvOHsxrcJtWYF6B4IoWFsi5ANKRidS2u7VxNh7QsvI+pouyfgYVxcn4Xg02TPRiwvv89nnh850I1J8WoimuuN7QQUjmyQPVL+Qn9ZdUvV7jPKsQy6Gw/xpS4A+pq0SjBhTXa4wP22sr8mYti+nSEUB+sSeKLcZHVWEUREqHVd4Zx6sqyPW5AYFyYpOyGLfBySJf46klsQh9ciPwwOS3dj96JzvvD3ViHddqzs08rzg6VaFuNXh7BrPkphdG5WRCwRxfFw1ccFADZ+ZLlKOWY4FMxV/fYxFWOaCzieWhxZU8EODWgcFW4Fcb0HavI84DDTUEOfblJ6AYKc1RRHnrSl5yGLXJMhAQj72SQacn8m58rxjJOySsQdIQRIWva0STQsp2tPEBHRIuzoobZhLVAz9m1HzOQruRCAW+q9B7+Id0e8Qs9XRpFTW5difDoiDkk0B50deRRPTtNJXKlm7HAfI1gegmKHDQ=
+    secure: mNWs63cc/1cEUFVuvgizi99+bTGNIdDtg8VPJGfxKAfQftyucmhl+jIga+cdk/+iZa1Xxu0PJ78TX2l+wtEYgNy3xuNpx1BNld2FcDQqUOyiJYRZdN7eIO+yKMo5ERKvqPZcFTUF/d6RorhWAdAJJGrcVnWhAPJ62juZAY1LOrHBQKTQo6O02GX6BlP8gDvG3UcIOMQ8gfByck3AWh/K1ixnITqIln0tdabiZStCF5779xC6pK4FOoaTlFlEXtraH3DrQayyA6HF22RaFEobdYUu6H5jZLEppIJWUmUoF5dW+Az5JcBPLC3VJrr/5rFSrnPFYW7sUiMV2IEOD2nLnH9GwHddFcnGk8JRcku/QVGy5qAZJi/poANNeaMwXjE91ucDZgrImYsnykSCcuSFSu0IiEpLgL4ycGRx9CS0MdYGA0e3Pdv/WXnj0xeqZ4e6hGHsj04alBjEjxdWbQVYWHmAR5BIQyC1p78C6aCJkWGDdJCj2UpZ43cJBC3RFaVFd3mGgsg6Kt1EkGaSPOItzlcUTV593vT11Ortoj3u7wS+O1zm+cFJo7HBpn3Q2z16GwuNDXKlE2CdClb8K/HvpQBVvfstoYLwDdaYa9HAWKjxM5PxJDg/HsGPbXJJp7CuXILamzkQSUtQz4ZYEdvyO4EK+xgGf7HsHMKTdaeWZjs=
   file: app/build/outputs/apk/release/app-release.apk
   on:
     repo: Groggy/race-control-tv
