@@ -16,15 +16,13 @@ import fr.groggy.racecontrol.tv.ui.DataClassByIdDiffCallback
 import fr.groggy.racecontrol.tv.ui.session.SessionCard
 import fr.groggy.racecontrol.tv.utils.coroutines.traverse
 import kotlinx.coroutines.flow.*
-import java.time.Clock
 
 class SeasonBrowseViewModel @ViewModelInject constructor(
     private val currentSeasonIdRepository: CurrentSeasonIdRepository,
     private val eventRepository: EventRepository,
     private val imageRepository: ImageRepository,
     private val seasonRepository: SeasonRepository,
-    private val sessionRepository: SessionRepository,
-    private val clock: Clock
+    private val sessionRepository: SessionRepository
 ) : ViewModel() {
 
     companion object {
@@ -57,7 +55,7 @@ class SeasonBrowseViewModel @ViewModelInject constructor(
         eventRepository.observe(ids)
             .onEach { Log.d(TAG, "Events changed") }
             .flatMapLatest { events -> events
-                .filter { !it.isFutureEvent(clock) && it.sessions.isNotEmpty() }
+                .filter { it.sessions.isNotEmpty() }
                 .sortedByDescending { it.period.start }
                 .traverse { event -> sessions(event.sessions)
                     .map { sessions -> Event(
@@ -74,7 +72,7 @@ class SeasonBrowseViewModel @ViewModelInject constructor(
         sessionRepository.observe(ids)
             .onEach { Log.d(TAG, "Sessions changed") }
             .flatMapLatest { sessions -> sessions
-                .filter { it.available && !it.isFutureSession(clock) && it.channels.isNotEmpty() }
+                .filter { it.available && it.channels.isNotEmpty() }
                 .sortedByDescending { it.period.start }
                 .traverse { session -> thumbnail(session.images)
                     .map { thumbnail -> Session(
