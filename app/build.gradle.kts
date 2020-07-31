@@ -60,7 +60,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion")
 
-    implementation("androidx.core:core-ktx:1.3.0")
+    implementation("androidx.core:core-ktx:1.3.1")
     implementation("androidx.fragment:fragment-ktx:1.2.5")
     implementation("androidx.leanback:leanback:1.0.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.2.0")
