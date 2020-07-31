@@ -17,9 +17,11 @@ import fr.groggy.racecontrol.tv.core.season.SeasonService
 import fr.groggy.racecontrol.tv.f1tv.F1TvSeasonId
 import fr.groggy.racecontrol.tv.ui.channel.playback.ChannelPlaybackActivity
 import fr.groggy.racecontrol.tv.ui.event.EventListRowDiffCallback
-import fr.groggy.racecontrol.tv.ui.session.browse.SessionBrowseActivity
 import fr.groggy.racecontrol.tv.ui.session.SessionCardPresenter
+import fr.groggy.racecontrol.tv.ui.session.browse.SessionBrowseActivity
+import fr.groggy.racecontrol.tv.utils.coroutines.schedule
 import javax.inject.Inject
+import kotlin.time.minutes
 
 @Keep
 @AndroidEntryPoint
@@ -82,9 +84,11 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
         Log.d(TAG, "onStart")
         super.onStart()
         lifecycleScope.launchWhenStarted {
-            findSeasonId(requireActivity())
-                ?.let { seasonService.loadSeason(it) }
-                ?: seasonService.loadCurrentSeason()
+            schedule(1.minutes) {
+                findSeasonId(requireActivity())
+                    ?.let { seasonService.loadSeason(it) }
+                    ?: seasonService.loadCurrentSeason()
+            }
         }
     }
 
