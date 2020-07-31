@@ -27,6 +27,18 @@ class SessionBrowseViewModel @ViewModelInject constructor(
         private val TAG = SessionBrowseViewModel::class.simpleName
     }
 
+    init {
+        Log.d(TAG, "init")
+    }
+
+    suspend fun sessionLoaded(id: F1TvSessionId): Session =
+        session(id)
+            .filter { session -> when(session) {
+                is SingleChannelSession -> true
+                is MultiChannelsSession -> session.channels.isNotEmpty()
+            } }
+            .first()
+
     fun session(id: F1TvSessionId): Flow<Session> =
         sessionRepository.observe(id)
             .onEach { Log.d(TAG, "Session changed") }

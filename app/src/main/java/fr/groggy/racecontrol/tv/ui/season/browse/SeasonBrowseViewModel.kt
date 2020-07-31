@@ -29,6 +29,20 @@ class SeasonBrowseViewModel @ViewModelInject constructor(
         private val TAG = SeasonBrowseViewModel::class.simpleName
     }
 
+    init {
+        Log.d(TAG, "init")
+    }
+
+    suspend fun currentSeasonLoaded() =
+        loaded(currentSeason)
+
+    suspend fun seasonLoaded(id: F1TvSeasonId) =
+        loaded(season(id))
+
+    private suspend fun loaded(season: Flow<Season>) {
+        season.filter { it.events.isNotEmpty() }.first()
+    }
+
     val currentSeason: Flow<Season> by lazy {
         currentSeasonIdRepository.observe()
             .onEach { Log.d(TAG, "Current season id changed") }

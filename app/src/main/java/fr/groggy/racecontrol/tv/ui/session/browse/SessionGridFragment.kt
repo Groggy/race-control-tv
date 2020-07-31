@@ -10,9 +10,7 @@ import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.widget.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import fr.groggy.racecontrol.tv.core.session.SessionService
 import fr.groggy.racecontrol.tv.f1tv.F1TvSessionId
 import fr.groggy.racecontrol.tv.ui.channel.ChannelCardPresenter
 import fr.groggy.racecontrol.tv.ui.channel.playback.ChannelPlaybackActivity
@@ -38,7 +36,6 @@ class SessionGridFragment : VerticalGridSupportFragment(), OnItemViewClickedList
             activity.intent.getStringExtra(SESSION_ID)?.let { F1TvSessionId(it) }
     }
 
-    @Inject lateinit var sessionService: SessionService
     @Inject lateinit var channelsCardPresenter: ChannelCardPresenter
 
     private val sessionId: F1TvSessionId by lazy { findSessionId(requireActivity())!! }
@@ -50,7 +47,7 @@ class SessionGridFragment : VerticalGridSupportFragment(), OnItemViewClickedList
         super.onCreate(savedInstanceState)
         setupUIElements()
         setupEventListeners()
-        val viewModel: SessionBrowseViewModel by viewModels()
+        val viewModel: SessionBrowseViewModel by viewModels({ requireActivity() })
         viewModel.session(sessionId).asLiveData().observe(this, Observer { onUpdatedSession(it) })
     }
 
@@ -77,12 +74,6 @@ class SessionGridFragment : VerticalGridSupportFragment(), OnItemViewClickedList
                 channelsAdapter.setItems(session.channels, Channel.diffCallback)
             }
         }
-    }
-
-    override fun onStart() {
-        Log.d(TAG, "onStart")
-        super.onStart()
-        lifecycleScope.launchWhenStarted { sessionService.loadSessionWithImagesAndChannels(sessionId) }
     }
 
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder?, item: Any, rowViewHolder: RowPresenter.ViewHolder?, row: Row?) {

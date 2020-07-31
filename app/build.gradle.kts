@@ -97,6 +97,8 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
 
+    implementation("com.google.android.material:material:1.3.0-alpha02")
+
 }
 
 kapt {

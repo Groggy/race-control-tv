@@ -10,18 +10,14 @@ import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import fr.groggy.racecontrol.tv.R
-import fr.groggy.racecontrol.tv.core.season.SeasonService
 import fr.groggy.racecontrol.tv.f1tv.F1TvSeasonId
 import fr.groggy.racecontrol.tv.ui.channel.playback.ChannelPlaybackActivity
 import fr.groggy.racecontrol.tv.ui.event.EventListRowDiffCallback
 import fr.groggy.racecontrol.tv.ui.session.SessionCardPresenter
 import fr.groggy.racecontrol.tv.ui.session.browse.SessionBrowseActivity
-import fr.groggy.racecontrol.tv.utils.coroutines.schedule
 import javax.inject.Inject
-import kotlin.time.minutes
 
 @Keep
 @AndroidEntryPoint
@@ -40,7 +36,6 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
             activity.intent.getStringExtra(SEASON_ID)?.let { F1TvSeasonId(it) }
     }
 
-    @Inject lateinit var seasonService: SeasonService
     @Inject lateinit var eventListRowDiffCallback: EventListRowDiffCallback
     @Inject lateinit var sessionCardPresenter: SessionCardPresenter
 
@@ -52,7 +47,7 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
         setupUIElements()
         setupEventListeners()
 
-        val viewModel: SeasonBrowseViewModel by viewModels()
+        val viewModel: SeasonBrowseViewModel by viewModels({ requireActivity() })
         val season = findSeasonId(requireActivity())
             ?.let { viewModel.season(it) }
             ?: viewModel.currentSeason
@@ -78,18 +73,6 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
             .filter { it.sessions.isNotEmpty() }
             .map { toListRow(it, existingListRows) }
         eventsAdapter.setItems(events, eventListRowDiffCallback)
-    }
-
-    override fun onStart() {
-        Log.d(TAG, "onStart")
-        super.onStart()
-        lifecycleScope.launchWhenStarted {
-            schedule(1.minutes) {
-                findSeasonId(requireActivity())
-                    ?.let { seasonService.loadSeason(it) }
-                    ?: seasonService.loadCurrentSeason()
-            }
-        }
     }
 
     private fun toListRow(event: Event, existingListRows: List<ListRow>): ListRow {
