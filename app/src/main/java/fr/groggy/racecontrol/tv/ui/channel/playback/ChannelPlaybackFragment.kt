@@ -42,28 +42,24 @@ class ChannelPlaybackFragment : Fragment() {
     @Inject lateinit var viewingService: ViewingService
     @Inject lateinit var httpDataSourceFactory: HttpDataSource.Factory
 
-    private lateinit var player: ExoPlayer
-    private lateinit var mediaSourceFactory: MediaSourceFactory
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG, "onCreate")
-        super.onCreate(savedInstanceState)
-        createPlayer()
+    private val playerView: PlayerView by lazy {
+        PlayerView(requireContext())
     }
-
-    private fun createPlayer() {
-        player = SimpleExoPlayer.Builder(requireContext()).build()
+    private val player: ExoPlayer by lazy {
+        val player = SimpleExoPlayer.Builder(requireContext()).build()
         player.playWhenReady = true
-        mediaSourceFactory = HlsMediaSource.Factory(httpDataSourceFactory)
+        playerView.player = player
+        player
+    }
+    private val mediaSourceFactory: MediaSourceFactory by lazy {
+        HlsMediaSource.Factory(httpDataSourceFactory)
             .setAllowChunklessPreparation(true)
     }
 
     override fun onStart() {
         Log.d(TAG, "onStart")
         super.onStart()
-        val channelId = findChannelId(
-            requireActivity()
-        )!!
+        val channelId = findChannelId(requireActivity())!!
         lifecycleScope.launchWhenStarted {
             val viewing = viewingService.getViewing(channelId)
             onViewingCreated(viewing)
@@ -77,9 +73,7 @@ class ChannelPlaybackFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG, "onCreateView")
-        val view = PlayerView(requireContext())
-        view.player = player
-        return view
+        return playerView
     }
 
     override fun onDestroy() {
