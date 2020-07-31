@@ -45,7 +45,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-        freeCompilerArgs = freeCompilerArgs + listOf("-XXLanguage:+InlineClasses")
+        freeCompilerArgs = freeCompilerArgs + listOf(
+            "-XXLanguage:+InlineClasses",
+            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        )
     }
 }
 
