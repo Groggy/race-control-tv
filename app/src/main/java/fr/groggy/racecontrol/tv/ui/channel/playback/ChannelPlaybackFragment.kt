@@ -14,12 +14,16 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.HttpDataSource
+import com.google.android.exoplayer2.util.EventLogger
 import dagger.hilt.android.AndroidEntryPoint
+import fr.groggy.racecontrol.tv.R
 import fr.groggy.racecontrol.tv.core.ViewingService
 import fr.groggy.racecontrol.tv.f1tv.F1TvChannelId
 import fr.groggy.racecontrol.tv.f1tv.F1TvViewing
+import fr.groggy.racecontrol.tv.ui.player.AudioSelectionDialogFragment
+import fr.groggy.racecontrol.tv.ui.player.CustomPlayerView
 import javax.inject.Inject
 
 @Keep
@@ -42,13 +46,15 @@ class ChannelPlaybackFragment : Fragment() {
     @Inject lateinit var viewingService: ViewingService
     @Inject lateinit var httpDataSourceFactory: HttpDataSource.Factory
 
-    private val playerView: PlayerView by lazy {
-        PlayerView(requireContext())
+    private val trackSelector: DefaultTrackSelector by lazy {
+        DefaultTrackSelector(requireContext())
     }
     private val player: ExoPlayer by lazy {
-        val player = SimpleExoPlayer.Builder(requireContext()).build()
+        val player = SimpleExoPlayer.Builder(requireContext())
+            .setTrackSelector(trackSelector)
+            .build()
         player.playWhenReady = true
-        playerView.player = player
+        player.addAnalyticsListener(EventLogger(trackSelector))
         player
     }
     private val mediaSourceFactory: MediaSourceFactory by lazy {
@@ -73,12 +79,34 @@ class ChannelPlaybackFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG, "onCreateView")
+        val playerView = inflater.inflate(R.layout.fragment_channel_playback, container, false) as CustomPlayerView
+        playerView.player = player
+        playerView.setTrackSelector(trackSelector)
+        playerView.onShowAudioSelectionDialog(this::showAudioSelectionDialog)
         return playerView
     }
 
     override fun onDestroy() {
         player.release()
         super.onDestroy()
+    }
+
+    private fun showAudioSelectionDialog() {
+        trackSelector.currentMappedTrackInfo?.let { currentMappedTrackInfo ->
+            val trackGroupArray = currentMappedTrackInfo.getTrackGroups(1)
+            val dialog = AudioSelectionDialogFragment(trackGroupArray)
+            dialog.onAudioLanguageSelected { language ->
+                parentFragmentManager.beginTransaction()
+                    .remove(dialog)
+                    .commit()
+                val parameters = trackSelector.buildUponParameters()
+                    .setPreferredAudioLanguage(language)
+                trackSelector.setParameters(parameters)
+            }
+            parentFragmentManager.beginTransaction()
+                .add(dialog, null)
+                .commit()
+        }
     }
 
 }
