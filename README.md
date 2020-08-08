@@ -5,8 +5,7 @@ Android TV application to watch content from [F1 TV](https://f1tv.formula1.com).
 At this time, only live or replay content from the current season is available (F1, F2, F3, ...).
 Onboard channels when available are supported, as well as technical channels like the tracker channel.
 
-Multiple channels playback is not supported. Audio selection (language or no commentary) is not supported
-so everything is in english.
+Multiple channels playback is not supported. Audio selection (language or no commentary) is supported.
 
 Application is not translated and only available in english.
 

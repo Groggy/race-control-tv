@@ -14,8 +14,8 @@ android {
         applicationId = "fr.groggy.racecontrol.tv"
         minSdkVersion(26)
         targetSdkVersion(30)
-        versionCode = 3
-        versionName = "1.1.0"
+        versionCode = 4
+        versionName = "1.2.0"
 
     }
 
