@@ -47,6 +47,7 @@ deploy:
   provider: releases
   api_key:
     secure: mNWs63cc/1cEUFVuvgizi99+bTGNIdDtg8VPJGfxKAfQftyucmhl+jIga+cdk/+iZa1Xxu0PJ78TX2l+wtEYgNy3xuNpx1BNld2FcDQqUOyiJYRZdN7eIO+yKMo5ERKvqPZcFTUF/d6RorhWAdAJJGrcVnWhAPJ62juZAY1LOrHBQKTQo6O02GX6BlP8gDvG3UcIOMQ8gfByck3AWh/K1ixnITqIln0tdabiZStCF5779xC6pK4FOoaTlFlEXtraH3DrQayyA6HF22RaFEobdYUu6H5jZLEppIJWUmUoF5dW+Az5JcBPLC3VJrr/5rFSrnPFYW7sUiMV2IEOD2nLnH9GwHddFcnGk8JRcku/QVGy5qAZJi/poANNeaMwXjE91ucDZgrImYsnykSCcuSFSu0IiEpLgL4ycGRx9CS0MdYGA0e3Pdv/WXnj0xeqZ4e6hGHsj04alBjEjxdWbQVYWHmAR5BIQyC1p78C6aCJkWGDdJCj2UpZ43cJBC3RFaVFd3mGgsg6Kt1EkGaSPOItzlcUTV593vT11Ortoj3u7wS+O1zm+cFJo7HBpn3Q2z16GwuNDXKlE2CdClb8K/HvpQBVvfstoYLwDdaYa9HAWKjxM5PxJDg/HsGPbXJJp7CuXILamzkQSUtQz4ZYEdvyO4EK+xgGf7HsHMKTdaeWZjs=
+  draft: true
   file: race-control-tv-$TRAVIS_TAG.apk
   on:
     repo: Groggy/race-control-tv
