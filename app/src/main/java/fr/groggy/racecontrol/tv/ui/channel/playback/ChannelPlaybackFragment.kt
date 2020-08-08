@@ -4,13 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.Keep
-import androidx.fragment.app.Fragment
+import androidx.leanback.app.VideoSupportFragment
+import androidx.leanback.app.VideoSupportFragmentGlueHost
 import androidx.lifecycle.lifecycleScope
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
@@ -18,17 +15,15 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.google.android.exoplayer2.util.EventLogger
 import dagger.hilt.android.AndroidEntryPoint
-import fr.groggy.racecontrol.tv.R
 import fr.groggy.racecontrol.tv.core.ViewingService
 import fr.groggy.racecontrol.tv.f1tv.F1TvChannelId
 import fr.groggy.racecontrol.tv.f1tv.F1TvViewing
-import fr.groggy.racecontrol.tv.ui.player.AudioSelectionDialogFragment
-import fr.groggy.racecontrol.tv.ui.player.CustomPlayerView
+import fr.groggy.racecontrol.tv.ui.player.ExoPlayerPlaybackTransportControlGlue
 import javax.inject.Inject
 
 @Keep
 @AndroidEntryPoint
-class ChannelPlaybackFragment : Fragment() {
+class ChannelPlaybackFragment : VideoSupportFragment() {
 
     companion object {
         private val TAG = ChannelPlaybackFragment::class.simpleName
@@ -49,7 +44,7 @@ class ChannelPlaybackFragment : Fragment() {
     private val trackSelector: DefaultTrackSelector by lazy {
         DefaultTrackSelector(requireContext())
     }
-    private val player: ExoPlayer by lazy {
+    private val player: SimpleExoPlayer by lazy {
         val player = SimpleExoPlayer.Builder(requireContext())
             .setTrackSelector(trackSelector)
             .build()
@@ -60,6 +55,13 @@ class ChannelPlaybackFragment : Fragment() {
     private val mediaSourceFactory: MediaSourceFactory by lazy {
         HlsMediaSource.Factory(httpDataSourceFactory)
             .setAllowChunklessPreparation(true)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate")
+        super.onCreate(savedInstanceState)
+        val glue = ExoPlayerPlaybackTransportControlGlue(requireActivity(), player, trackSelector)
+        glue.host = VideoSupportFragmentGlueHost(this)
     }
 
     override fun onStart() {
@@ -77,36 +79,10 @@ class ChannelPlaybackFragment : Fragment() {
         player.prepare(mediaSource)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        Log.d(TAG, "onCreateView")
-        val playerView = inflater.inflate(R.layout.fragment_channel_playback, container, false) as CustomPlayerView
-        playerView.player = player
-        playerView.setTrackSelector(trackSelector)
-        playerView.onShowAudioSelectionDialog(this::showAudioSelectionDialog)
-        return playerView
-    }
-
     override fun onDestroy() {
+        Log.d(TAG, "onDestroy")
         player.release()
         super.onDestroy()
-    }
-
-    private fun showAudioSelectionDialog() {
-        trackSelector.currentMappedTrackInfo?.let { currentMappedTrackInfo ->
-            val trackGroupArray = currentMappedTrackInfo.getTrackGroups(1)
-            val dialog = AudioSelectionDialogFragment(trackGroupArray)
-            dialog.onAudioLanguageSelected { language ->
-                parentFragmentManager.beginTransaction()
-                    .remove(dialog)
-                    .commit()
-                val parameters = trackSelector.buildUponParameters()
-                    .setPreferredAudioLanguage(language)
-                trackSelector.setParameters(parameters)
-            }
-            parentFragmentManager.beginTransaction()
-                .add(dialog, null)
-                .commit()
-        }
     }
 
 }

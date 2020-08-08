@@ -9,15 +9,15 @@ import com.google.android.exoplayer2.source.TrackGroupArray
 import fr.groggy.racecontrol.tv.R
 
 class AudioSelectionDialogFragment(
-    trackGroupArray: TrackGroupArray
+    trackGroups: TrackGroupArray
 ) : DialogFragment() {
 
     private var onAudioLanguageSelectedListener: ((String?) -> Unit)? = null
 
     private val formats by lazy {
         val formats = mutableListOf<Format>()
-        for (i in 0 until trackGroupArray.length) {
-            val trackGroup = trackGroupArray[i]
+        for (i in 0 until trackGroups.length) {
+            val trackGroup = trackGroups[i]
             for (j in 0 until trackGroup.length) {
                 formats.add(trackGroup.getFormat(j))
             }

@@ -90,6 +90,7 @@ dependencies {
 
     val exoplayerVersion = "2.11.7"
     implementation("com.google.android.exoplayer:exoplayer:$exoplayerVersion")
+    implementation("com.google.android.exoplayer:extension-leanback:$exoplayerVersion")
     implementation("com.google.android.exoplayer:extension-okhttp:$exoplayerVersion")
 
     val roomVersion = "2.2.5"
