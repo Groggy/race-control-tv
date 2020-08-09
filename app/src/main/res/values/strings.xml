@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">Race Control TV</string>
-
     <string name="login">Login</string>
     <string name="password">Password</string>
     <string name="signin">Sign in</string>

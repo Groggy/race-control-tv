@@ -31,10 +31,18 @@ android {
     }
 
     buildTypes {
+        val appName = "Race Control TV"
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+            isDebuggable = true
+            resValue("string", "app_name", "$appName (debug)")
+        }
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
+            resValue("string", "app_name", appName)
         }
     }
 
