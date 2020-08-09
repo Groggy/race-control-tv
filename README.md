@@ -23,6 +23,8 @@ Latest APK can be downloaded [here](https://github.com/Groggy/race-control-tv/re
 
 ![Channel playback](/screenshots/channel_playback.png)
 
+![Channel audio selection](/screenshots/channel_audio_selection.png)
+
 ## Disclaimer
 
 I have created this app because the official [F1 TV app](https://play.google.com/store/apps/details?id=com.formulaone.production)
