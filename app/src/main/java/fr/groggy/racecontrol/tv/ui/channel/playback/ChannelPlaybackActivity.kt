@@ -1,6 +1,6 @@
 package fr.groggy.racecontrol.tv.ui.channel.playback
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -15,8 +15,8 @@ class ChannelPlaybackActivity : FragmentActivity() {
     companion object {
         private val TAG = ChannelPlaybackActivity::class.simpleName
 
-        fun intent(activity: Activity, channelId: F1TvChannelId): Intent {
-            val intent = Intent(activity.baseContext, ChannelPlaybackActivity::class.java)
+        fun intent(context: Context, channelId: F1TvChannelId): Intent {
+            val intent = Intent(context, ChannelPlaybackActivity::class.java)
             ChannelPlaybackFragment.putChannelId(
                 intent,
                 channelId

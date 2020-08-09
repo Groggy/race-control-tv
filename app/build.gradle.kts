@@ -8,7 +8,7 @@ plugins {
 
 android {
     compileSdkVersion(30)
-    buildToolsVersion("30.0.1")
+    buildToolsVersion("30.0.2")
 
     defaultConfig {
         applicationId = "fr.groggy.racecontrol.tv"
@@ -16,7 +16,6 @@ android {
         targetSdkVersion(30)
         versionCode = 4
         versionName = "1.2.0"
-
     }
 
     signingConfigs {
@@ -64,7 +63,7 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
-    val kotlinCoroutinesVersion = "1.3.7"
+    val kotlinCoroutinesVersion = "1.3.9"
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion")
@@ -81,12 +80,14 @@ dependencies {
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:$androidxHiltVersion")
     kapt("androidx.hilt:hilt-compiler:$androidxHiltVersion")
 
-    val okHttpVersion = "4.8.0"
+    val okHttpVersion = "4.8.1"
     implementation("com.squareup.okhttp3:okhttp:$okHttpVersion")
     implementation("com.squareup.okhttp3:okhttp-urlconnection:$okHttpVersion")
 
     val moshiVersion = "1.9.3"
-    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion") {
+        exclude(module = "kotlin-reflect")
+    }
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
     implementation("com.auth0.android:jwtdecode:2.0.0")
@@ -108,6 +109,9 @@ dependencies {
 
     implementation("com.google.android.material:material:1.3.0-alpha02")
 
+    implementation("net.swiftzer.semver:semver:1.1.1")
+
+    implementation("io.noties.markwon:core:4.5.1")
 }
 
 kapt {

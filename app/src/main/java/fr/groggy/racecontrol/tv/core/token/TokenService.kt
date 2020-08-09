@@ -1,11 +1,8 @@
 package fr.groggy.racecontrol.tv.core.token
 
-import android.content.Context
 import android.util.Log
 import com.auth0.android.jwt.JWT
-import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.groggy.racecontrol.tv.core.credentials.CredentialsService
-import fr.groggy.racecontrol.tv.core.credentials.F1CredentialsRepository
 import fr.groggy.racecontrol.tv.f1.F1Client
 import fr.groggy.racecontrol.tv.f1.F1Token
 import fr.groggy.racecontrol.tv.f1tv.F1TvClient
@@ -20,8 +17,7 @@ class TokenService @Inject constructor(
     private val f1TvTokenRepository: F1TvTokenRepository,
     private val credentialsService: CredentialsService,
     private val f1: F1Client,
-    private val f1Tv: F1TvClient,
-    @ApplicationContext private val context: Context
+    private val f1Tv: F1TvClient
 ) {
 
     companion object {

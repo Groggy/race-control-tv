@@ -8,7 +8,6 @@ import androidx.annotation.Keep
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
-import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.AndroidEntryPoint
 import fr.groggy.racecontrol.tv.R
@@ -51,7 +50,7 @@ class SeasonBrowseFragment : BrowseSupportFragment(), OnItemViewClickedListener 
         val season = findSeasonId(requireActivity())
             ?.let { viewModel.season(it) }
             ?: viewModel.currentSeason
-        season.asLiveData().observe(this, Observer { onUpdatedSeason(it) })
+        season.asLiveData().observe(this, this::onUpdatedSeason)
     }
 
     private fun setupUIElements() {

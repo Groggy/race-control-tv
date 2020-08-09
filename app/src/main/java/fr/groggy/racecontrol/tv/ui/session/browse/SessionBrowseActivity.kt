@@ -1,6 +1,6 @@
 package fr.groggy.racecontrol.tv.ui.session.browse
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -20,8 +20,8 @@ class SessionBrowseActivity : FragmentActivity() {
     companion object {
         private val TAG = SessionBrowseActivity::class.simpleName
 
-        fun intent(activity: Activity, sessionId: F1TvSessionId): Intent {
-            val intent = Intent(activity.baseContext, SessionBrowseActivity::class.java)
+        fun intent(context: Context, sessionId: F1TvSessionId): Intent {
+            val intent = Intent(context, SessionBrowseActivity::class.java)
             SessionGridFragment.putSessionId(intent, sessionId)
             return intent
         }

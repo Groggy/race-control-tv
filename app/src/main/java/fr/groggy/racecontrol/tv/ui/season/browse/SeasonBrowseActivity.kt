@@ -1,12 +1,11 @@
 package fr.groggy.racecontrol.tv.ui.season.browse
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import fr.groggy.racecontrol.tv.R
@@ -23,11 +22,11 @@ class SeasonBrowseActivity : FragmentActivity() {
     companion object {
         private val TAG = SeasonBrowseActivity::class.simpleName
 
-        fun intent(activity: Activity): Intent =
-            Intent(activity.baseContext, SeasonBrowseActivity::class.java)
+        fun intent(context: Context): Intent =
+            Intent(context, SeasonBrowseActivity::class.java)
 
-        fun intent(activity: Activity, seasonId: F1TvSeasonId): Intent {
-            val intent = intent(activity)
+        fun intent(context: Context, seasonId: F1TvSeasonId): Intent {
+            val intent = intent(context)
             SeasonBrowseFragment.putSeasonId(
                 intent,
                 seasonId

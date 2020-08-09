@@ -1,6 +1,6 @@
 package fr.groggy.racecontrol.tv.ui.signin
 
-import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -24,8 +24,8 @@ class SignInActivity : ComponentActivity() {
     companion object {
         private val TAG = SignInActivity::class.simpleName
 
-        fun intent(activity: Activity): Intent =
-            Intent(activity.baseContext, SignInActivity::class.java)
+        fun intent(context: Context): Intent =
+            Intent(context, SignInActivity::class.java)
     }
 
     @Inject lateinit var credentialsService: CredentialsService

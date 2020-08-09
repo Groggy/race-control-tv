@@ -8,7 +8,6 @@ import androidx.annotation.Keep
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.VerticalGridSupportFragment
 import androidx.leanback.widget.*
-import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.AndroidEntryPoint
 import fr.groggy.racecontrol.tv.f1tv.F1TvSessionId
@@ -48,7 +47,7 @@ class SessionGridFragment : VerticalGridSupportFragment(), OnItemViewClickedList
         setupUIElements()
         setupEventListeners()
         val viewModel: SessionBrowseViewModel by viewModels({ requireActivity() })
-        viewModel.session(sessionId).asLiveData().observe(this, Observer { onUpdatedSession(it) })
+        viewModel.session(sessionId).asLiveData().observe(this, this::onUpdatedSession)
     }
 
     private fun setupUIElements() {
